@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width,height=device-height">
+    <title>dragDemo</title>
+
+    <link rel="stylesheet" href="./font/iconfont.css">
+</head>
+<body>
+    <h1 class="title">拖动更改顺序</h1>
+    <div class="drag-ul" class="drag-container" id="dragContainer">
+        <div   class="drag-option"  draggable="true">
+            <div class="inline-drag">
+                <span class="drag-index" id="dragIndex1">1</span>
+                <span>选项1</span>
+            </div>
+            <icon class="iconfont icon-gengduo"></icon>
+<!--            <icon class="iconfont icon-zhankaishangxia"></icon>-->
+        </div>
+        <div class="drag-option"  draggable="true">
+            <div  class="inline-drag">
+                <span class="drag-index" id="dragIndex2">2</span>
+                <span>选项2</span>
+            </div>
+            <icon class="iconfont icon-gengduo"></icon>
+<!--            <icon class="iconfont icon-zhankaishangxia"></icon>-->
+        </div>
+        <div  class="drag-option"  draggable="true" >
+          <div  class="inline-drag">
+              <span class="drag-index" id="dragIndex3">3</span>
+              <span>选项3</span>
+          </div>
+            <icon class="iconfont icon-gengduo"></icon>
+<!--            <icon class="iconfont icon-zhankaishangxia"></icon>-->
+        </div>
+        <div class="drag-option" draggable="true">
+           <div  class="inline-drag">
+               <span class="drag-index">4</span>
+               <span>选项4</span>
+           </div>
+            <icon class="iconfont icon-gengduo"></icon>
+<!--            <icon class="iconfont icon-zhankaishangxia"></icon>-->
+        </div>
+        <div  class="drag-option" draggable="true">
+           <div  class="inline-drag">
+               <span class="drag-index">5</span>
+               <span>选项5</span>
+           </div>
+            <icon class="iconfont icon-gengduo"></icon>
+<!--            <icon class="iconfont icon-zhankaishangxia"></icon>-->
+        </div>
+    </div>
+</body>
+<script>
+    var node = document.querySelector('#dragContainer')
+    var draging = null;
+    var targetRect,dragingRect,targetAfter ,dragingAfter;
+
+    //使用事件委托，将拖拽的事件委托给dragContainer
+    node.ondragstart = function(event) {
+        // /firefox设置了setData后元素才能拖动！！！！
+        event.dataTransfer.setData("te", event.target.innerText); //不能使用text，firefox会打开新tab
+        draging = event.target;
+         targetRect =  event.target.getBoundingClientRect();
+         dragingRect = draging.getBoundingClientRect();
+        event.target.style.opacity='0.1';
+        //修改顺序
+        var iconArr = document.getElementsByTagName('icon');
+        for(var i=0;i<iconArr.length;i++){
+            iconArr[i].className="iconfont icon-zhankaishangxia";
+        }
+    }
+    node.ondragover = function(event) {
+        var target = event.target;
+         targetAfter = target.getBoundingClientRect();
+         dragingAfter = draging.getBoundingClientRect();
+
+        //因为dragover会发生在外层，所以要判断是不是drag-option
+        if (target.className === "drag-option"&&target !== draging) {
+
+            //_index是实现的获取index
+            if (_index(draging) < _index(target)) {
+                target.parentNode.insertBefore(draging, target.nextSibling);
+            } else {
+                target.parentNode.insertBefore(draging, target);
+            }
+
+
+
+            draging.style.opacity=1;
+            target.style.transition='none';
+            target.style.transform='translate3d('+'0px,' +
+                (targetRect.top - targetAfter.top) + 'px,0)'
+
+            target.offsetWidth; //触发重绘
+            target.style.transition='all 300ms';
+            target.style.transform='translate3d(0,0,0)';
+
+            //修改顺序
+            var indexArr = document.getElementsByClassName('drag-index');
+            var iconArr = document.getElementsByTagName('icon');
+            for(var i=0;i<indexArr.length;i++){
+                indexArr[i].innerText = i+1;
+                iconArr[i].className="iconfont icon-gengduo";
+            }
+        }
+    }
+
+    function _index(el) {
+        var index = 0;
+        if (!el || !el.parentNode) {
+            return -1;
+        }
+        while (el && (el = el.previousElementSibling)) {
+            index++;
+        }
+        return index;
+    }
+</script>
+
+<style>
+    .title{
+        font-size: 20px;
+    }
+    .drag-ul{
+        list-style: none;
+        padding-inline-start: 0px;
+        display: block;
+    }
+    .drag-option{
+        height: 44px;
+        width: 100%;
+        border: 1px solid #aaa;
+        margin-bottom: 5px;
+        align-items: center;
+        display: flex;
+        border-radius: 4px;
+        justify-content: space-between;
+        position: relative;
+    }
+    .inline-drag{
+        display: flex;
+        align-items: center;
+    }
+    .drag-index{
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 1px solid #aaa;
+        display: flex;
+        align-item:center;
+        justify-content: center;
+        margin: 10px ;
+        color: #fff;
+        background: #32c;
+    }
+    .drag-option icon{
+        margin-right: 5px;
+    }
+    .drag-option:active{
+        background: #3322cc;
+    }
+    .drag-option:active .drag-index{
+        background: #fff;
+        color: #32c;
+    }
+</style>
+</html>
