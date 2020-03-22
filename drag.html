@@ -55,7 +55,7 @@
 <script>
     var node = document.querySelector('#dragContainer')
     var draging = null;
-    var targetRect,dragingRect,targetAfter ,dragingAfter;
+    var targetRect,targetAfter ;
 
     //使用事件委托，将拖拽的事件委托给dragContainer
     node.ondragstart = function(event) {
@@ -63,7 +63,7 @@
         event.dataTransfer.setData("te", event.target.innerText); //不能使用text，firefox会打开新tab
         draging = event.target;
          targetRect =  event.target.getBoundingClientRect();
-         dragingRect = draging.getBoundingClientRect();
+
         event.target.style.opacity='0.1';
         //修改顺序
         var iconArr = document.getElementsByTagName('icon');
@@ -74,7 +74,7 @@
     node.ondragover = function(event) {
         var target = event.target;
          targetAfter = target.getBoundingClientRect();
-         dragingAfter = draging.getBoundingClientRect();
+
 
         //因为dragover会发生在外层，所以要判断是不是drag-option
         if (target.className === "drag-option"&&target !== draging) {
